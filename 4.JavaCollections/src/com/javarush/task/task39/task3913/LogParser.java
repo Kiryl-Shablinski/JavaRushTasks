@@ -10,6 +10,8 @@ import java.nio.file.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -382,8 +384,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
 
     @Override
     public Set<Object> execute(String query) {
-      Set <Object> setQuery = new HashSet<>();
-        switch (query) {
+         switch (query) {
             case "get ip" :
                 return new HashSet<>(getUniqueIPs(null, null));
             case "get user" :
@@ -400,11 +401,34 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                         .collect(Collectors.toSet());
 
         }
+        listLog.stream()
+            //    .map(getField(query))
+
+                .collect(Collectors.toSet());
+        //get field1 for field2 = "value1"
+        // Вызов метода execute с параметром "get ip for user = "[any_user]""
+        // должен возвращать множество уникальных IP адресов, с которых работал пользователь с именем [any_user].
+
         return null;
+    }
+    public Object getField(String field){
+        Pattern pattern =
+                Pattern.compile("get (ip|user|date|event|status){1} for (ip|user|date|event|status)? = (\"\\S\")?+ ");
+        Matcher matcher = pattern.matcher(field);
+        String field1;
+        String field2;
+        String value1;
+
+        field1 = matcher.group(1);
+        field2 = matcher.group(2);
+        value1 = matcher.group(3);
+
+        return field1;
     }
 
 
-    class MyParserLog {
+
+     class MyParserLog {
         private String ip;
         private String userName;
         private Date date;
@@ -460,5 +484,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
             }else
             return ip + " " + userName + " " + date + " " + event + " " + taskNumber + " " + status;
         }
+
+
     }
 }
